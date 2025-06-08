@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Donate Now - Landing Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f7fafc;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 480px;
+            margin: 60px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 32px 24px;
+            text-align: center;
+        }
+        h1 {
+            color: #2d3748;
+            margin-bottom: 12px;
+        }
+        p {
+            color: #4a5568;
+            margin-bottom: 28px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        input, select {
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+        input:focus, select:focus {
+            border-color: #3182ce;
+        }
+        button {
+            background: #3182ce;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 14px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .footer {
+            margin-top: 32px;
+            color: #a0aec0;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Support Our Cause</h1>
+        <p>Your donation helps us make a difference. Every contribution counts!</p>
+        <form id="donationForm">
+            <input type="text" name="fullName" placeholder="Full Name" required>
+            <input type="email" name="email" placeholder="Email Address" required>
+            <input type="number" name="amount" min="1" placeholder="Donation Amount (USD)" required>
+            <input type="number" min="1" placeholder="Custom Amount (USD)" style="display:none;" id="customAmount" name="customAmount">
+            <button type="submit">Donate Now</button>
+        </form>
+        <div class="footer">
+            &copy; 2024 Your Organization. All rights reserved.
+        </div>
+    </div>
+    <script>
+        // Show custom amount input if 'Custom Amount' is selected
+        const select = document.querySelector('select');
+        const customAmount = document.getElementById('customAmount');
+        if (select) {
+            select.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customAmount.style.display = 'block';
+                    customAmount.required = true;
+                } else {
+                    customAmount.style.display = 'none';
+                    customAmount.required = false;
+                }
+            });
+        }
+
+        // Send form data to backend server via HTTP request
+        document.getElementById('donationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const data = {
+                fullName: form.fullName.value,
+                email: form.email.value,
+                amount: form.customAmount.value || form.amount.value
+            };
+            try {
+                const response = await fetch('http://localhost:8080/donate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                if (response.ok) {
+                    alert('Thank you for your donation!');
+                    form.reset();
+                } else {
+                    alert('There was an error processing your donation.');
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>
